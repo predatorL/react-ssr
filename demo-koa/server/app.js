@@ -1,12 +1,10 @@
-import App from '../src/App';
 import Koa from 'koa';
-import React from 'react';
 import Router from 'koa-router';
 import fs from 'fs';
 import KoaStatic from 'koa-static';
 import path from 'path';
-import { renderToString } from 'react-dom/server';
-import {StaticRouter} from 'react-router-dom';
+import render from './render';
+import seo from './seo';
 
 const app = new Koa();
 const config = {
@@ -32,12 +30,12 @@ try {
 app.use(
     new Router()
     .get('*', async(ctx, next) => {
+        let _shtml = shtml;
         ctx.response.type = 'html';
-        let renderStr = renderToString(
-        <StaticRouter location={ctx.request.url} context={{demoName: 'simple'}}>
-            <App />
-        </StaticRouter>
-        )
+        // SEO
+        _shtml = seo(ctx, _shtml);
+        // render
+        let renderStr = render(ctx, _shtml);
         ctx.response.body = shtml.replace('<div id="root"></div>', `<div id="root">${renderStr}</div>`)
     })
     .routes()
