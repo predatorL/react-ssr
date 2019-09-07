@@ -1,0 +1,12 @@
+body {
+    background-color: #dedede;
+}
+
+.app {
+  text-align: center;
+  width: 640px;
+  margin: 0 auto;
+  background: #fff;
+  min-height: 100vh;
+}
+
