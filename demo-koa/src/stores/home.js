@@ -6,4 +6,7 @@ export default class Store {
     @action setUserInfo(data) {
         this.userInfo = data;
     }
+    init(data) {
+        this.setUserInfo(data);
+    }
 }

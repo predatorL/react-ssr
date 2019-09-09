@@ -6,4 +6,7 @@ export default class Store {
     @action setList(data) {
         this.list = data;
     }
+    init(data) {
+        this.setList(data);
+    }
 }

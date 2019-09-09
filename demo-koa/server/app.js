@@ -5,6 +5,7 @@ import KoaStatic from 'koa-static';
 import path from 'path';
 import render from './render';
 import seo from './seo';
+import injectStore from './store/inject';
 
 const app = new Koa();
 const config = {
@@ -26,6 +27,34 @@ try {
     console.error(error);
 }
 
+// mock
+let api = new Router();
+api.get('/api/userinfo', (ctx, next) => {
+    ctx.body = {
+        status: 200,
+        data: {
+            name: 'test',
+            id: 10086,
+            idcard: 1008601,
+        }
+    }
+})
+api.get('/api/list', (ctx, next) => {
+    ctx.body = {
+        status: 200,
+        data: {
+            page: 1,
+            size: 3,
+            count: 12,
+            data: [
+                {id: 1, name: 'te1'},
+                {id: 2, name: 'te2'},
+                {id: 3, name: 'te3'},
+            ]
+        }
+    }
+})
+app.use(api.routes());
 
 app.use(
     new Router()
@@ -35,8 +64,10 @@ app.use(
         // SEO
         _shtml = seo(ctx, _shtml);
         // render
-        let renderStr = render(ctx, _shtml);
-        ctx.response.body = shtml.replace('<div id="root"></div>', `<div id="root">${renderStr}</div>`)
+        let renderStr = await render(ctx);
+        // inject store
+        _shtml = injectStore(ctx, _shtml);
+        ctx.response.body = _shtml.replace('<div id="root"></div>', `<div id="root">${renderStr}</div>`)
     })
     .routes()
 )
